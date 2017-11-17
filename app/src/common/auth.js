@@ -12,7 +12,7 @@ const auth = new auth0.WebAuth({
 
 export function login() {
   auth.authorize({
-    responseType: 'token',
+    responseType: 'id_token',
     redirectUri: REDIRECT,
     scope: SCOPE,
   });

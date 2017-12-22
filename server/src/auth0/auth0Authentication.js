@@ -3,14 +3,14 @@ const jwkRsa = require('jwks-rsa');
 const fromEvent = require('graphcool-lib').fromEvent;
 
 const verifyToken = token =>
-  new Promise(resolve => {
+  new Promise((resolve, reject) => {
     // Decode the JWT Token
     const decoded = jwt.decode(token, { complete: true });
     if (!decoded || !decoded.header || !decoded.header.kid) {
-      throw new Error('Unable to retrieve key identifier from token');
+      reject('Unable to retrieve key identifier from token');
     }
     if (decoded.header.alg !== 'RS256') {
-      throw new Error(
+      reject(
         `Wrong signature algorithm, expected RS256, got ${decoded.header.alg}`
       );
     }
@@ -21,7 +21,7 @@ const verifyToken = token =>
 
     // Retrieve the JKWS's signing key using the decode token's key identifier (kid)
     jkwsClient.getSigningKey(decoded.header.kid, (err, key) => {
-      if (err) throw new Error(err);
+      if (err) return reject(err);
 
       const signingKey = key.publicKey || key.rsaPublicKey;
 
@@ -36,8 +36,8 @@ const verifyToken = token =>
           audience: `${process.env.AUTH0_CLIENT_ID}`,
         },
         (err, decoded) => {
-          if (err) throw new Error(err);
-          return resolve(decoded);
+          if (err) return reject(err);
+          resolve(decoded);
         }
       );
     });
@@ -110,6 +110,6 @@ export default async event => {
 
     return { data: { id: graphCoolUser.id, token } };
   } catch (err) {
-    return { error: 'An unexpected error occured: ' + err };
+    return { error: err };
   }
 };

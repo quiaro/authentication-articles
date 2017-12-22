@@ -1,7 +1,7 @@
 import auth0 from 'auth0-js';
 
-const CLIENT_DOMAIN = '__AUTH0_DOMAIN__';
-const CLIENT_ID = '__AUTH0_CLIENT_ID__';
+const CLIENT_DOMAIN = `${process.env.REACT_APP_AUTH0_DOMAIN}`;
+const CLIENT_ID = `${process.env.REACT_APP_CLIENT_ID}`;
 const SCOPE = 'openid email';
 const REDIRECT = 'http://localhost:3000/callback';
 
